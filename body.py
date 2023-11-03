@@ -20,9 +20,17 @@ class Body:
   
   def get_velocity(self):
     return self.velocity
+  
+  def set_x(self, x):
+    self.position[0] = x
+
+  def set_y(self, y):
+    self.position[1] = y
 
   def get_r(self, other):
     r = self.get_distance(self.get_x(), other.get_x(), self.get_y(), other.get_y())
+    if r < .1:
+      return .1
     return r
   
   def scalar_multiply(self, x, vector):
@@ -85,18 +93,10 @@ class Body:
     acceleration = self.find_acceleration(total_force_vector)
     v_delta = self.velocity_delta(acceleration, time)
     self.update_velocity(v_delta)
-    self.update_position([self.velocity[0] * time, self.velocity[1] * time])
-    return self.get_position(), self.get_velocity()
+    distance_delta = [self.velocity[0] * time, self.velocity[1] * time]
+    return distance_delta
 
-    
-b1 = Body(1, [0, 0], [0, 0])
-b2 = Body(1, [1, 1], [0, 0])
 
-for i in range(1000):
-  for n in range(100):
-    b1.step_simulation([b1, b2], .001)
-    b2.step_simulation([b1, b2], .001)
-  print(b1.get_distance(b1.get_x(), b2.get_x(), b1.get_y(), b2.get_x()))
 # bodies = [b1, b2]
 # i = 0
 # time_step = 1
