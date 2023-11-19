@@ -1,10 +1,22 @@
-import math
+import math, random
 
 class Body:
-  def __init__(self, mass, position_init, velocity_vector_init):
+  def __init__(self, mass, position_init, velocity_vector_init, color, orbit={'type': None, 'mass': None, 'radius': None}, name=None):
+    self.name = name
     self.position = position_init
     self.mass = mass
     self.velocity = velocity_vector_init
+    self.radius = ((( 3/(4 * math.pi) ) * self.mass) ** (1/3))
+    if orbit['type'] == 'circular':
+      tangential_velocity = self.circular_orbit(orbit['mass'], orbit['radius'])
+      self.velocity = [tangential_velocity, 0]
+    elif orbit['type'] == 'elyptical':
+      tangential_velocity = self.circular_orbit(orbit['mass'], orbit['radius'])
+      noise = random.uniform(-.05, .05)
+      tangential_velocity += tangential_velocity * noise
+      self.velocity = [tangential_velocity, 0]
+    self.color = color
+
 
   def get_distance(self, x1, x2, y1, y2):
     return math.sqrt(((x1 - x2)**2 + (y1 - y2)**2))
@@ -26,6 +38,16 @@ class Body:
 
   def set_y(self, y):
     self.position[1] = y
+
+  def circular_orbit(self, mass, r):
+    return math.sqrt(mass/r)
+  
+  def is_coliding(self, other):
+    r = self.get_r(other)
+    if r <= self.radius + other.radius:
+      return True
+    return False
+
 
   def get_r(self, other):
     r = self.get_distance(self.get_x(), other.get_x(), self.get_y(), other.get_y())
